@@ -1,0 +1,46 @@
+Live verification: https://redesignbyasif.github.io/bekabuildingservicesltd.com
+date: Sun Nov 22 17:30:28 UTC 2026
+
+== HTML
+status=200 bytes=34558 type=text/html; charset=utf-8
+title: BBS Ltd — Plumbing, Heating &amp; Renewables in Grays, Essex
+noindex: 1
+
+== Assets referenced by the live HTML
+assets/fonts/archivo-var.woff2                 200 34928 font/woff2
+assets/fonts/instrument-serif.woff2            200 21032 font/woff2
+assets/images/brand-engineer.jpg               200 125421 image/jpeg
+assets/images/brand-engineer.webp              200 39612 image/webp
+assets/images/certs/bpec.png                   200 27473 image/png
+assets/images/certs/cityguilds.png             200 25719 image/png
+assets/images/certs/gassafe.png                200 13427 image/png
+assets/images/certs/refcom.png                 200 39986 image/png
+assets/images/certs/vaillant.png               200 30323 image/png
+assets/images/hero-boiler-uk.jpg               200 176013 image/jpeg
+assets/images/hero-boiler-uk.webp              200 91020 image/webp
+assets/images/project-boiler-service.jpg       200 83897 image/jpeg
+assets/images/project-boiler-service.webp      200 42758 image/webp
+assets/images/project-cylinder.jpg             200 244843 image/jpeg
+assets/images/project-cylinder.webp            200 125272 image/webp
+assets/images/project-exterior.jpg             200 149351 image/jpeg
+assets/images/project-exterior.webp            200 105634 image/webp
+assets/images/project-kitchen.jpg              200 42960 image/jpeg
+assets/images/project-kitchen.webp             200 18558 image/webp
+assets/images/project-manifold.jpg             200 269286 image/jpeg
+assets/images/project-manifold.webp            200 153998 image/webp
+assets/images/project-showroom-tall.jpg        200 127160 image/jpeg
+assets/images/project-showroom-tall.webp       200 58166 image/webp
+assets/images/project-showroom.jpg             200 166688 image/jpeg
+assets/images/project-showroom.webp            200 89338 image/webp
+assets/logo/bbs-crest.webp                     200 19078 image/webp
+assets/logo/favicon.png                        200 21494 image/png
+css/style.css                                  200 40870 text/css; charset=utf-8
+js/script.js                                   200 9746 application/javascript; charset=utf-8
+
+== Local vs deployed checksum of key files
+index.html                               local=aef91f90d3b89e4f remote=aef91f90d3b89e4f MATCH
+css/style.css                            local=906fe2d44ca492f8 remote=906fe2d44ca492f8 MATCH
+js/script.js                             local=10d22656d39e812b remote=10d22656d39e812b MATCH
+assets/logo/bbs-crest.webp               local=ea0fd6f9ad0d68aa remote=ea0fd6f9ad0d68aa MATCH
+assets/images/brand-engineer.webp        local=50c69361f5f92554 remote=50c69361f5f92554 MATCH
+assets/fonts/archivo-var.woff2           local=8f704806dbedeaae remote=8f704806dbedeaae MATCH
