@@ -8,21 +8,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch
+      - name: Probe
         run: |
+          set +e
           mkdir -p _research
-          exec > _research/log.txt 2>&1
-          echo "=== plain"
-          curl -sS -L --max-time 40 -D - -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" https://bekabuildingservicesltd.com/ -o _research/home.html; echo "exit=$?"
-          wc -c _research/home.html
-          echo "=== logo"
-          curl -sS -L --max-time 40 -A "Mozilla/5.0" -e "https://bekabuildingservicesltd.com/" https://bekabuildingservicesltd.com/wp-content/uploads/2025/04/WhatsApp-Image-2025-03-29-at-21.13.09-1.jpeg -o _research/logo.jpg; echo "exit=$?"
-          file _research/logo.jpg; wc -c _research/logo.jpg
-          head -c 300 _research/log.txt
+          OUT=_research/log.txt
+          echo "== dns" > $OUT
+          getent hosts bekabuildingservicesltd.com >> $OUT 2>&1
+          echo "== curl https" >> $OUT
+          curl -sS -L --max-time 30 -k -o _research/home.html -w "http=%{http_code} size=%{size_download} ip=%{remote_ip}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" https://bekabuildingservicesltd.com/ >> $OUT 2>&1
+          echo "exit=$?" >> $OUT
+          echo "== curl http" >> $OUT
+          curl -sS -L --max-time 30 -o _research/home_http.html -w "http=%{http_code} size=%{size_download} ip=%{remote_ip}\n" -A "Mozilla/5.0" http://bekabuildingservicesltd.com/ >> $OUT 2>&1
+          echo "exit=$?" >> $OUT
+          echo "== curl --http1.1" >> $OUT
+          curl -sS -L --http1.1 --max-time 30 -k -o /dev/null -w "http=%{http_code}\n" https://bekabuildingservicesltd.com/ >> $OUT 2>&1
+          echo "exit=$?" >> $OUT
+          echo "== wget" >> $OUT
+          wget -S -O /dev/null --timeout=30 https://bekabuildingservicesltd.com/ >> $OUT 2>&1
+          echo "exit=$?" >> $OUT
+          echo "== py" >> $OUT
+          python3 -c "
+import urllib.request,ssl
+ctx=ssl.create_default_context(); ctx.check_hostname=False; ctx.verify_mode=ssl.CERT_NONE
+try:
+    r=urllib.request.urlopen(urllib.request.Request('https://bekabuildingservicesltd.com/',headers={'User-Agent':'Mozilla/5.0'}),timeout=30,context=ctx)
+    d=r.read(); open('_research/home_py.html','wb').write(d); print('ok',len(d))
+except Exception as e: print('err',repr(e))
+" >> $OUT 2>&1
+          echo "== sizes" >> $OUT
+          ls -la _research >> $OUT 2>&1
+          echo "== head" >> $OUT
+          head -c 600 _research/home.html >> $OUT 2>&1
+          echo >> $OUT
+          echo "== images" >> $OUT
+          grep -oE 'https://bekabuildingservicesltd\.com/wp-content/uploads/[^"'\'' )\\]+' _research/home.html 2>/dev/null | sort -u | head -120 >> $OUT 2>&1
       - name: Push
         run: |
+          set +e
           git config user.name "research-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -f _research/home.html _research/logo.jpg _research/log.txt 2>/dev/null || true
-          git commit -m "research: assets" || true
-          git push origin HEAD:arena/e7b18c83-bekabuildingservicesltd-com 2>&1 | tail -3
+          git add -f _research
+          git commit -m "research: probe"
+          git push origin HEAD:arena/e7b18c83-bekabuildingservicesltd-com
