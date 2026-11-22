@@ -1,0 +1,15 @@
+name: probe
+on: [push, workflow_dispatch]
+permissions:
+  contents: write
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hi
+        run: echo "hi from runner"
+      - name: Write file
+        run: |
+          mkdir -p _research
+          curl -sS -L --max-time 30 -k https://bekabuildingservicesltd.com/ -o _research/home.html -w "http=%{http_code} size=%{size_download}\n" > _research/log.txt 2>&1
+          ls -la _research >> _research/log.txt
