@@ -1,7 +1,5 @@
 name: research-assets
 on:
-  push:
-    branches: [arena/e7b18c83-bekabuildingservicesltd-com]
   workflow_dispatch:
 permissions:
   contents: write
@@ -10,27 +8,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download site html
+      - name: Fetch
         run: |
-          set -x
           mkdir -p _research
-          curl -sSL --max-time 60 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36" https://bekabuildingservicesltd.com/ -o _research/home.html -w "code=%{http_code} size=%{size_download}\n" || echo "curl failed $?"
-          ls -la _research
-          python3 - <<'PY'
-          import re,glob
-          try:
-              html=open('_research/home.html',encoding='utf-8',errors='ignore').read()
-          except Exception as e:
-              print('no html',e); raise SystemExit
-          urls=sorted(set(re.findall(r'https?://bekabuildingservicesltd\.com/wp-content/uploads/[^\s"\'()\\]+', html)))
-          open('_research/urls.txt','w').write('\n'.join(urls))
-          print('found',len(urls))
-          for u in urls[:80]: print(u)
-          PY
-      - name: Commit research
+          curl -sSL --max-time 60 -A "Mozilla/5.0" "https://bekabuildingservicesltd.com/" -o _research/home.html
+          ls -la _research > _research/log.txt
+          wc -c _research/home.html >> _research/log.txt 2>&1
+          head -c 400 _research/home.html >> _research/log.txt 2>&1
+          grep -oE 'https://bekabuildingservicesltd\.com/wp-content/uploads/[^"'\'' )]+' _research/home.html | sort -u > _research/urls.txt || true
+          wc -l _research/urls.txt >> _research/log.txt
+      - name: Push
         run: |
           git config user.name "research-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A _research
-          git commit -m "research: capture original site html" || true
-          git push || true
+          git add -A
+          git commit -m "research: original site snapshot" || true
+          git push origin HEAD:arena/e7b18c83-bekabuildingservicesltd-com > _research/push.txt 2>&1 || true
+          cat _research/push.txt
