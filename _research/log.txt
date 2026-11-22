@@ -1,0 +1,11 @@
+== curl https
+http=200 size=595367
+exit=0
+total 596
+drwxr-xr-x 2 runner runner   4096 Nov 22 16:05 .
+drwxr-xr-x 7 runner runner   4096 Nov 22 16:05 ..
+-rw-r--r-- 1 runner runner 595367 Nov 22 16:05 home.html
+-rw-r--r-- 1 runner runner     42 Nov 22 16:05 log.txt
+595367 _research/home.html
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US" prefix="og: https://ogp.me/ns#"> <head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"><script>document.seraph_accel_usbpb=document.createElement;seraph_accel_izrbpb={add:function(b,a=10){void 0===this.a[a]&&(this.a[a]=[]);this.a[a].push
