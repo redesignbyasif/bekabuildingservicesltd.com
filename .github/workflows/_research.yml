@@ -1,5 +1,8 @@
 name: research-assets
 on:
+  push:
+    branches: [arena/e7b18c83-bekabuildingservicesltd-com]
+    paths: ['.trigger/**']
   workflow_dispatch:
 permissions:
   contents: write
