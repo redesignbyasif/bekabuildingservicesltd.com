@@ -6,10 +6,22 @@ jobs:
   hello:
     runs-on: ubuntu-latest
     steps:
-      - name: Say hi
-        run: echo "hi from runner"
-      - name: Write file
+      - uses: actions/checkout@v4
+      - name: Fetch home
         run: |
           mkdir -p _research
-          curl -sS -L --max-time 30 -k https://bekabuildingservicesltd.com/ -o _research/home.html -w "http=%{http_code} size=%{size_download}\n" > _research/log.txt 2>&1
-          ls -la _research >> _research/log.txt
+          {
+            echo "== curl https"
+            curl -sS -L -k --max-time 40 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" https://bekabuildingservicesltd.com/ -o _research/home.html -w "http=%{http_code} size=%{size_download}\n"
+            echo "exit=$?"
+            ls -la _research
+            wc -c _research/home.html
+            head -c 300 _research/home.html
+          } > _research/log.txt 2>&1
+      - name: Commit
+        run: |
+          git config user.name "research-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f _research
+          git commit -m "research: home + log" || true
+          git push origin HEAD:arena/e7b18c83-bekabuildingservicesltd-com || true
