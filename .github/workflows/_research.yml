@@ -13,22 +13,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Probe
         run: |
-          set +e
           mkdir -p _research
           OUT=_research/log.txt
-          echo "== dns" > $OUT
+          : > $OUT
+          echo "== dns" >> $OUT
           getent hosts bekabuildingservicesltd.com >> $OUT 2>&1
           echo "== curl https" >> $OUT
           curl -sS -L --max-time 30 -k -o _research/home.html -w "http=%{http_code} size=%{size_download} ip=%{remote_ip}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" https://bekabuildingservicesltd.com/ >> $OUT 2>&1
           echo "exit=$?" >> $OUT
           echo "== curl http" >> $OUT
           curl -sS -L --max-time 30 -o _research/home_http.html -w "http=%{http_code} size=%{size_download} ip=%{remote_ip}\n" -A "Mozilla/5.0" http://bekabuildingservicesltd.com/ >> $OUT 2>&1
-          echo "exit=$?" >> $OUT
-          echo "== curl --http1.1" >> $OUT
-          curl -sS -L --http1.1 --max-time 30 -k -o /dev/null -w "http=%{http_code}\n" https://bekabuildingservicesltd.com/ >> $OUT 2>&1
-          echo "exit=$?" >> $OUT
-          echo "== wget" >> $OUT
-          wget -S -O /dev/null --timeout=30 https://bekabuildingservicesltd.com/ >> $OUT 2>&1
           echo "exit=$?" >> $OUT
           echo "== py" >> $OUT
           python3 -c "
@@ -45,12 +39,11 @@ except Exception as e: print('err',repr(e))
           head -c 600 _research/home.html >> $OUT 2>&1
           echo >> $OUT
           echo "== images" >> $OUT
-          grep -oE 'https://bekabuildingservicesltd\.com/wp-content/uploads/[^"'\'' )\\]+' _research/home.html 2>/dev/null | sort -u | head -120 >> $OUT 2>&1
+          grep -oE 'https://bekabuildingservicesltd\.com/wp-content/uploads/[^"'\'' )\\]+' _research/home.html 2>/dev/null | sort -u | head -150 >> $OUT 2>&1
       - name: Push
         run: |
-          set +e
           git config user.name "research-bot"
           git config user.email "actions@users.noreply.github.com"
           git add -f _research
-          git commit -m "research: probe"
-          git push origin HEAD:arena/e7b18c83-bekabuildingservicesltd-com
+          git commit -m "research: probe" || true
+          git push origin HEAD:arena/e7b18c83-bekabuildingservicesltd-com || true
