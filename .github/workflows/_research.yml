@@ -1,0 +1,26 @@
+name: research-assets
+on:
+  push:
+    branches: [arena/e7b18c83-bekabuildingservicesltd-com]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download site html
+        run: |
+          mkdir -p _research
+          curl -sSL --max-time 60 -A "Mozilla/5.0" https://bekabuildingservicesltd.com/ -o _research/home.html || true
+          ls -la _research; wc -c _research/home.html || true
+          grep -oE 'https?://bekabuildingservicesltd\.com/wp-content/uploads/[^"'"'"' )]+' _research/home.html | sort -u | head -100 > _research/urls.txt || true
+          cat _research/urls.txt | head -60
+      - name: Commit research
+        run: |
+          git config user.name "research-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add _research || true
+          git commit -m "research: capture original site html" || true
+          git push || true
