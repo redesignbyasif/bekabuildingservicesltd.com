@@ -12,15 +12,25 @@ jobs:
       - uses: actions/checkout@v4
       - name: Download site html
         run: |
+          set -x
           mkdir -p _research
-          curl -sSL --max-time 60 -A "Mozilla/5.0" https://bekabuildingservicesltd.com/ -o _research/home.html || true
-          ls -la _research; wc -c _research/home.html || true
-          grep -oE 'https?://bekabuildingservicesltd\.com/wp-content/uploads/[^"'"'"' )]+' _research/home.html | sort -u | head -100 > _research/urls.txt || true
-          cat _research/urls.txt | head -60
+          curl -sSL --max-time 60 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36" https://bekabuildingservicesltd.com/ -o _research/home.html -w "code=%{http_code} size=%{size_download}\n" || echo "curl failed $?"
+          ls -la _research
+          python3 - <<'PY'
+          import re,glob
+          try:
+              html=open('_research/home.html',encoding='utf-8',errors='ignore').read()
+          except Exception as e:
+              print('no html',e); raise SystemExit
+          urls=sorted(set(re.findall(r'https?://bekabuildingservicesltd\.com/wp-content/uploads/[^\s"\'()\\]+', html)))
+          open('_research/urls.txt','w').write('\n'.join(urls))
+          print('found',len(urls))
+          for u in urls[:80]: print(u)
+          PY
       - name: Commit research
         run: |
           git config user.name "research-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add _research || true
+          git add -A _research
           git commit -m "research: capture original site html" || true
           git push || true
