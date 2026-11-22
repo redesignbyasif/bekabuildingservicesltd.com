@@ -3,25 +3,39 @@ on: [push, workflow_dispatch]
 permissions:
   contents: write
 jobs:
-  hello:
+  images:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch home
+      - name: Download originals
         run: |
-          mkdir -p _research
-          {
-            echo "== curl https"
-            curl -sS -L -k --max-time 40 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" https://bekabuildingservicesltd.com/ -o _research/home.html -w "http=%{http_code} size=%{size_download}\n"
-            echo "exit=$?"
-            ls -la _research
-            wc -c _research/home.html
-            head -c 300 _research/home.html
-          } > _research/log.txt 2>&1
+          mkdir -p _research/originals
+          cd _research/originals
+          for u in \
+            "2025/04/WhatsApp-Image-2025-03-29-at-21.13.09-1.jpeg" \
+            "2025/04/banner-video.png" \
+            "2025/04/services.jpg" \
+            "2024/10/0CFF4F38-CAD2-443C-B5DF-650A77CCD6BD-scaled.jpg" \
+            "2024/10/4853.jpeg" \
+            "2024/10/4854.jpeg" \
+            "2024/10/IMG_1816-scaled.jpg" \
+            "2024/10/IMG_2350-scaled.jpg" \
+            "2024/10/IMG_4209-scaled.jpg" \
+            "2024/10/IMG_6115.jpg" \
+            "2024/10/IMG_6117.jpg" \
+            "2024/10/IMG_6119.jpg" \
+            "2024/10/IMG_6120.jpg" \
+            "2024/10/IMG_6121.jpg" \
+          ; do
+            name=$(basename "$u")
+            curl -sS -L -k --max-time 60 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36" -e "https://bekabuildingservicesltd.com/" "https://bekabuildingservicesltd.com/wp-content/uploads/$u" -o "$name" || true
+          done
+          ls -la > ../images.txt
+          file * >> ../images.txt
       - name: Commit
         run: |
           git config user.name "research-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -f _research
-          git commit -m "research: home + log" || true
+          git add -f _research/originals _research/images.txt
+          git commit -m "research: original imagery" || true
           git push origin HEAD:arena/e7b18c83-bekabuildingservicesltd-com || true
